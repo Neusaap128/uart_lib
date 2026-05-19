@@ -5,11 +5,11 @@ use ieee.numeric_std.all;
 library uart_lib;
 use uart_lib.uart_pkg_e.all;
 
-entity tb_uart is
-end tb_uart;
+entity tb_uart_tx is
+end tb_uart_tx;
 
 
-architecture test of tb_uart is
+architecture test of tb_uart_tx is
 
     signal clk          : std_logic := '0';
     signal rst_async    : std_logic := '0';
@@ -22,21 +22,17 @@ architecture test of tb_uart is
 begin
 
 
-    dut : entity uart_lib.uart
+    dut : entity uart_lib.uart_tx
     port map (
         clk             => clk,
         rst_async       => rst_async,
    
         -- lines
         tx_out            => open,
-        rx_in             => '1',
    
         -- data
         tx_data_in        => tx_data,
         tx_data_valid_in  => tx_data_valid,
-   
-        rx_data_out       => open,
-        rx_data_valid_out => open,
    
         -- config
         --max baud rate:

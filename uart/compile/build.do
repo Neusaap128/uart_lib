@@ -1,15 +1,27 @@
 
 
-set ROOT [file normalize [pwd]/../../..]
-
+set ROOT [file normalize [pwd]/../../../..]
 puts "ROOT = $ROOT"
 
-vlib $ROOT/build
-vmap uart_lib ../../../build
+set LIB_DIR $ROOT/build/
+
+set PROJECT [file normalize [pwd]/../../..]
+puts "project= $PROJECT"
 
 
+# Recreate library cleanly
+if {[file exists $LIB_DIR]} {
+    file delete -force $LIB_DIR
+}
 
-vcom -93 -work uart_lib ../../rtl/uart.vhd
+
+vlib $LIB_DIR
+vmap uart_lib $LIB_DIR
+
+
+vcom -93 -work uart_lib $PROJECT/rtl/uart_tx.vhd
+vcom -93 -work uart_lib $PROJECT/rtl/uart_rx.vhd
+vcom -93 -work uart_lib $PROJECT/rtl/uart.vhd
 
 
 
