@@ -18,8 +18,9 @@ architecture test of tb_uart_rx is
     signal clk          : std_logic := '0';
     signal rst_async    : std_logic := '0';
 
-    signal rx_data        : std_logic_vector(7 downto 0);
-    signal rx_data_valid  : std_logic;
+    signal rx_data          : std_logic_vector(7 downto 0);
+    signal rx_data_valid    : std_logic;
+    signal rx_framing_error : std_logic;
 
     signal rx : std_logic;
 
@@ -27,7 +28,8 @@ architecture test of tb_uart_rx is
     signal tx_active       : std_logic;
     signal tx_data         : std_logic_vector(7 downto 0);
     signal tx_baud_counter : integer range 0 to 868;
-    signal tx_bit_counter  : integer range -1 to 9; -- start and stop bit
+    signal tx_bit_counter  : integer range -1 to 11; -- start and stop bit + error duration
+    signal tx_insert_error : std_logic;
 
     file log_file : text open write_mode is "../res/tb_res.log";
 
@@ -54,12 +56,17 @@ architecture test of tb_uart_rx is
     );
 
      procedure unit_test(
-        variable l        : inout line;
-        signal tx_data    : out std_logic_vector(7 downto 0);
-        signal tx_start   : out std_logic;
-        constant data     : in std_logic_vector(7 downto 0)
+        variable l             : inout line;
+        signal tx_data         : out std_logic_vector(7 downto 0);
+        signal tx_start        : out std_logic;
+        signal tx_insert_error : out std_logic;
+        constant data          : in std_logic_vector(7 downto 0);
+        constant insert_error  : in std_logic
     ) is
+      variable v_test_failed : boolean;
     begin
+
+        v_test_failed := false;
 
         write(l, string'("----- TEST -----"));
         writeline(log_file, l);
@@ -71,22 +78,50 @@ architecture test of tb_uart_rx is
 
         tx_data  <= data;
         tx_start <= '1';
+        tx_insert_error <= insert_error;
 
         wait until rising_edge(clk);
 
         tx_start <= '0';
 
-        wait until rx_data_valid = '1';
+        -- wait for output
+        if(insert_error = '0') then
+          wait until rx_data_valid = '1';
+        else
+          wait until rx_framing_error = '1' for 1 ms;
+        end if;
         wait until rising_edge(clk);
 
+        if(insert_error = '0') then
 
-        if rx_data = data then
+          if(rx_data /= data) then
+              write(l, string'("got data byte; 0x") );
+              hwrite(l, rx_data);
+              writeline(log_file, l);
+              v_test_failed := true;
+          end if;
+
+        else
+
+          if(rx_framing_error = '0') then
+            v_test_failed := true;
+            write(l, string'("rx_framing_error not asserted") );
+            writeline(log_file, l);
+          else
+            
+            -- time for tx reset
+            wait for 50 us;
+            wait until rising_edge(clk);
+
+          end if;
+
+        end if;
+        
+
+        if v_test_failed = false then
             write(l, string'("-- TEST PASSED --") );
             report "test passed";
         else
-            write(l, string'("got data byte; 0x") );
-            hwrite(l, rx_data);
-            writeline(log_file, l);
             write(l, string'("-- TEST FAILED --") );
             report "test failed";
         end if;
@@ -108,8 +143,9 @@ begin
         rx_in            => rx,
    
         -- data
-        rx_data_out       => rx_data,
-        rx_data_valid_out => rx_data_valid,
+        rx_data_out          => rx_data,
+        rx_data_valid_out    => rx_data_valid,
+        rx_framing_error_out => rx_framing_error,
    
         -- config
         --max baud rate:
@@ -153,19 +189,40 @@ begin
           if(tx_baud_counter = 0) then
             tx_baud_counter <= 868;
 
-            if(tx_bit_counter = 9) then
-              tx_active <= '0';
-              tx_bit_counter <= - 1;
-            else
-              tx_bit_counter <= tx_bit_counter + 1;
+            -- bit counter
+            if(tx_insert_error = '0') then
+              if(tx_bit_counter = 8) then
+                tx_active <= '0';
+                tx_bit_counter <= - 1;
+              else
+                tx_bit_counter <= tx_bit_counter + 1;
+              end if;
+            else 
+              if(tx_bit_counter = 11) then
+                tx_active <= '0';
+                tx_bit_counter <= - 1;
+              else
+                tx_bit_counter <= tx_bit_counter + 1;
+              end if;
+
             end if;
 
+        
+            -- Output decoder
             if(tx_bit_counter = -1) then
               rx <= '0';
             elsif(tx_bit_counter < 8) then
               rx <= tx_data(tx_bit_counter);
+            elsif(tx_bit_counter = 8) then
+              if(tx_insert_error = '1') then
+                rx <= '0';
+              else 
+                rx <= '1';
+              end if;
+            elsif(tx_bit_counter < 11) then
+                rx <= '0';
             else
-              rx <= '1';
+                rx <= '1';
             end if;
 
           else 
@@ -192,7 +249,7 @@ begin
         rst_async <= '0';   
         tx_start <= '0';
         tx_data <= (others => '0');
-
+        tx_insert_error <= '0';
 
         wait for 20 ns;
 
@@ -200,17 +257,35 @@ begin
         wait for 20 ns; 
 
         wait for 10 us; 
-
-        for i in 0 to c_amount_of_tests -1 loop
+      
+        -- loop test cases
+        for i in 0 to c_amount_of_tests-3 loop
 
           unit_test(
               l,
               tx_data,
               tx_start,
-              test_vectors(i)
+              tx_insert_error,
+              test_vectors(i),
+              '0'
           );
 
-          wait for 10 us;
+          wait for 50 us; 
+
+        end loop;
+
+        -- final two tests have errors
+        for i in c_amount_of_tests - 2 to c_amount_of_tests -1 loop
+
+          unit_test(
+              l,
+              tx_data,
+              tx_start,
+              tx_insert_error,
+              test_vectors(i),
+              '1'
+          );
+
         end loop;
 
         assert false

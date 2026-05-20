@@ -114,6 +114,7 @@ begin
    
         rx_data_out       => rx_data,
         rx_data_valid_out => rx_data_valid,
+        rx_framing_error_out => open,
 
         -- config
         --max baud rate:

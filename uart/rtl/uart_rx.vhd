@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 
 package uart_rx_pkg_e is
 
-    component uart
+    component uart_rx
         port (    
           clk             : in   std_logic;
           rst_async       : in   std_logic;
@@ -14,8 +14,9 @@ package uart_rx_pkg_e is
           rx_in             :  in std_logic;
     
           -- data
-          rx_data_out        : out std_logic_vector(7 downto 0) ;
-          rx_data_valid_out  : out std_logic;
+          rx_data_out           : out std_logic_vector(7 downto 0) ;
+          rx_data_valid_out     : out std_logic;
+          rx_framing_error_out  : out std_logic;
 
           -- config
           baud_div_in  : in std_logic_vector(15 downto 0);
@@ -41,8 +42,9 @@ entity uart_rx is
       rx_in             :  in std_logic;
   
       -- data
-      rx_data_out        : out std_logic_vector(7 downto 0) ;
-      rx_data_valid_out  : out std_logic;
+      rx_data_out           : out std_logic_vector(7 downto 0) ;
+      rx_data_valid_out     : out std_logic;
+      rx_framing_error_out  : out std_logic;
 
       -- config
       baud_div_in  : in std_logic_vector(15 downto 0);
@@ -81,8 +83,13 @@ begin
 
       s_bit_counter <= 0;
       rx_data_out <= (others => '0');
+      rx_data_valid_out <= '0';
+      rx_framing_error_out <= '0';
 
     elsif(clk'event and clk = '1') then
+
+      rx_framing_error_out <= '0';
+      rx_data_valid_out <= '0';
 
       if(s_read = '1') then
 
@@ -94,6 +101,16 @@ begin
 
         if(s_bit_counter < 8) then
             rx_data_out(s_bit_counter) <= rx_in;
+        end if;
+        
+        if(s_bit_counter = 8) then
+
+          if(rx_in  = '1') then
+            rx_data_valid_out <= '1';
+          else
+            rx_framing_error_out <= '1';
+          end if;
+
         end if;
 
       end if;
@@ -122,7 +139,6 @@ begin
       
       s_read <= '0';
       rx_in_d <= rx_in;  
-      rx_data_valid_out <= '0';
 
 
       if(rx_falling_edge = '1' and rx_ready = '1') then
@@ -144,7 +160,6 @@ begin
           if(s_bit_counter = 8) then
             rx_reading <= '0';
             rx_ready <= '1';
-            rx_data_valid_out <= '1';
           end if;
   
         else

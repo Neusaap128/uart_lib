@@ -20,6 +20,7 @@ package uart_pkg_e is
 
           rx_data_out       : out std_logic;
           rx_data_valid_out : out std_logic;
+          rx_framing_error_out  : out std_logic;
           
           -- config
           --max baud rate: 
@@ -56,6 +57,7 @@ entity uart is
 
         rx_data_out       : out std_logic_vector(7 downto 0);
         rx_data_valid_out : out std_logic;
+        rx_framing_error_out  : out std_logic;
         
         -- config
         --max baud rate: 
@@ -103,8 +105,10 @@ begin
       rx_in            => rx_in,
  
       -- data
-      rx_data_out       => rx_data_out,
-      rx_data_valid_out => rx_data_valid_out,
+      rx_data_out           => rx_data_out,
+      rx_data_valid_out     => rx_data_valid_out,
+      rx_framing_error_out  => rx_framing_error_out,
+
  
       -- config
       baud_div_in       => baud_div_in,
