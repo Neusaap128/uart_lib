@@ -1,0 +1,22 @@
+
+# ModelSim / Questa generated libraries
+*_lib/
+*_common_lib/
+
+# ModelSim database/cache files
+*.qdb
+*.qpg
+*.qtl
+_vmake
+_info
+
+# Simulation outputs
+vsim.wlf
+transcript
+*.wlf
+
+# Local simulator config (machine-specific)
+modelsim.ini
+
+# Temporary / build artifacts
+work/

@@ -1,0 +1,64 @@
+----- TEST -----
+data byte; 0x00
+-- TEST PASSED --
+
+----- TEST -----
+data byte; 0xFF
+-- TEST PASSED --
+
+----- TEST -----
+data byte; 0x55
+-- TEST PASSED --
+
+----- TEST -----
+data byte; 0xAA
+-- TEST PASSED --
+
+----- TEST -----
+data byte; 0x0F
+-- TEST PASSED --
+
+----- TEST -----
+data byte; 0xF0
+-- TEST PASSED --
+
+----- TEST -----
+data byte; 0x81
+-- TEST PASSED --
+
+----- TEST -----
+data byte; 0x7E
+-- TEST PASSED --
+
+----- TEST -----
+data byte; 0x01
+-- TEST PASSED --
+
+----- TEST -----
+data byte; 0x80
+-- TEST PASSED --
+
+----- TEST -----
+data byte; 0x42
+-- TEST PASSED --
+
+----- TEST -----
+data byte; 0x24
+-- TEST PASSED --
+
+----- TEST -----
+data byte; 0x18
+-- TEST PASSED --
+
+----- TEST -----
+data byte; 0xC3
+-- TEST PASSED --
+
+----- TEST -----
+data byte; 0x5A
+-- TEST PASSED --
+
+----- TEST -----
+data byte; 0xA5
+-- TEST PASSED --
+
