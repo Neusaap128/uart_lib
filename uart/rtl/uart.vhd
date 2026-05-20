@@ -28,6 +28,7 @@ package uart_pkg_e is
 
           -- status
           tx_ready_out  : out  std_logic
+          rx_ready_out  : out  std_logic
           
 
         );
