@@ -1,0 +1,24 @@
+
+# Vivado project junk
+*.jou
+*.log
+*.str
+*.backup*
+*.tmp
+
+# Vivado project directories 
+*.runs/
+*.cache/
+*.hw/
+*.ip_user_files/
+*.xpr
+*.xpr.*
+*.Xil/
+
+# Implementation outputs
+*.dcp
+*.bit
+*.mmi
+
+
+

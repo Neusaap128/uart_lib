@@ -27,7 +27,7 @@ package uart_pkg_e is
           baud_div_in  : in std_logic_vector(15 downto 0);
 
           -- status
-          tx_ready_out  : out  std_logic
+          tx_ready_out  : out  std_logic;
           rx_ready_out  : out  std_logic
           
 

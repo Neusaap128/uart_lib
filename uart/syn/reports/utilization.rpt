@@ -1,0 +1,32 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.2 (lin64) Build 5239630 Fri Nov 08 22:34:34 MST 2024
+| Date         : Thu May 21 17:03:49 2026
+| Host         : joranserver running 64-bit Ubuntu 20.04.6 LTS
+| Command      : report_utilization -hierarchical
+| Design       : uart_hweval
+| Device       : xc7s25csga225-1
+| Speed File   : -1
+| Design State : Synthesized
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++-----------------+---------+------------+------------+---------+------+-----+--------+--------+------------+
+|     Instance    |  Module | Total LUTs | Logic LUTs | LUTRAMs | SRLs | FFs | RAMB36 | RAMB18 | DSP Blocks |
++-----------------+---------+------------+------------+---------+------+-----+--------+--------+------------+
+| uart_hweval     |   (top) |         78 |         78 |       0 |    0 |  69 |      0 |      0 |          0 |
+|   (uart_hweval) |   (top) |          3 |          3 |       0 |    0 |  12 |      0 |      0 |          0 |
+|   uart_i        |    uart |         75 |         75 |       0 |    0 |  57 |      0 |      0 |          0 |
+|     uart_rx_i   | uart_rx |         45 |         45 |       0 |    0 |  29 |      0 |      0 |          0 |
+|     uart_tx_i   | uart_tx |         30 |         30 |       0 |    0 |  28 |      0 |      0 |          0 |
++-----------------+---------+------------+------------+---------+------+-----+--------+--------+------------+
+
+
