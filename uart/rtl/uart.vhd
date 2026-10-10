@@ -15,10 +15,10 @@ package uart_pkg_e is
           rx_in             :  in std_logic;
     
           -- data
-          tx_data_in        :  in std_logic_vector(7 downto 0) ;
+          tx_data_in        :  in std_logic_vector(7 downto 0);
           tx_data_valid_in  :  in std_logic;
 
-          rx_data_out       : out std_logic;
+          rx_data_out       : out std_logic_vector(7 downto 0);
           rx_data_valid_out : out std_logic;
           rx_framing_error_out  : out std_logic;
           
